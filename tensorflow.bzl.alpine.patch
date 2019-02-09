@@ -1,0 +1,37 @@
+diff -u a/tensorflow/tensorflow.bzl b/tensorflow/tensorflow.bzl
+--- a/tensorflow/tensorflow.bzl
++++ b/tensorflow/tensorflow.bzl
+@@ -417,7 +417,7 @@
+             ],
+         ),
+         data = data + tf_binary_dynamic_kernel_dsos(kernels),
+-        linkopts = linkopts + _rpath_linkopts(name),
++        linkopts = linkopts + _rpath_linkopts(name) + ["-lexecinfo"],
+         **kwargs
+     )
+ 
+@@ -572,6 +572,7 @@
+         copts = tf_copts(),
+         alwayslink = 1,
+         visibility = visibility,
++        linkopts = ["-lexecinfo"],
+     )
+     native.cc_library(
+         name = name + "_internal",
+@@ -588,6 +589,7 @@
+         copts = tf_copts(),
+         alwayslink = 1,
+         visibility = [clean_dep("//tensorflow:internal")],
++        linkopts = ["-lexecinfo"],
+     )
+ 
+ # Generates a Python library target wrapping the ops registered in "deps".
+@@ -636,7 +638,7 @@
+         deps = [str(Label("//tensorflow/core:" + name + "_op_lib"))]
+     tf_cc_binary(
+         name = tool_name,
+-        linkopts = if_not_windows(["-lm", "-Wl,-ldl"]) + cc_linkopts,
++        linkopts = if_not_windows(["-lm", "-Wl,-ldl"]) + cc_linkopts + ["-lexecinfo"],
+         copts = tf_copts(),
+         linkstatic = 1,  # Faster to link this one-time-use binary dynamically
+         deps = ([
