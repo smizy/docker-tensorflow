@@ -1,0 +1,66 @@
+image: docker:latest
+
+variables:
+  DOCKER_DRIVER: overlay
+  VERSION: 1.12.0
+  TAG: ${VERSION}-cpu-alpine
+  TAG_MINOR: 1.12-cpu-alpine
+  TAG_MAJOR: 1-cpu-alpine
+  VCS_REF: ${CI_BUILD_REF}
+  # EXTRA_BAZEL_ARGS: "--local_resources 3072,1.0,1.0"
+
+services:
+  - docker:dind
+
+# before_script:
+#   - docker info
+
+stages:
+  - build
+  # - test
+  # - deploy
+
+image-build:
+  stage: build
+  script:
+    - docker build 
+      --build-arg BUILD_DATE=${BUILD_DATE} 
+      --build-arg VCS_REF=${VCS_REF} 
+      --build-arg VERSION=${VERSION} 
+      # --build-arg "EXTRA_BAZEL_ARGS=${EXTRA_BAZEL_ARGS}" 
+      --rm -t smizy/tensorflow:${TAG} .
+    - docker images | grep tensorflow
+#    - docker push ${CI_REGISTRY}/smizy/tensorflow:${TAG}
+    - docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - docker tag smizy/tensorflow:${TAG} smizy/tensorflow
+    - docker tag smizy/tensorflow:${TAG} smizy/tensorflow:${TAG_MINOR}
+#     - docker tag smizy/tensorflow:${TAG} smizy/tensorflow:${TAG_MAJOR}
+    - docker push smizy/tensorflow:${TAG}
+    - docker push smizy/tensorflow:${TAG_MINOR}
+#     - docker push smizy/tensorflow:${TAG_MAJOR}
+    - docker push smizy/tensorflow:latest
+    - docker logout
+    - apk --no-cache add curl
+    - curl -X POST 'https://hooks.microbadger.com/images/smizy/tensorflow/pyM26dwHzHStGaBNdc2xQpQI-EI='
+
+# image-test:
+#   stage: test
+#   script:
+#     - docker inspect ${CI_REGISTRY}/smizy/tensorflow:${TAG}
+#     - docker run ${CI_REGISTRY}/smizy/tensorflow:${TAG} python -c 'import tensorflow'
+
+# image-deploy:
+#   stage: deploy
+#   script:
+#     - docker pull ${CI_REGISTRY}/smizy/tensorflow:${TAG}
+#     - docker logout
+#     - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+#     - docker tag smizy/tensorflow:${TAG} smizy/tensorflow
+#     - docker tag smizy/tensorflow:${TAG} smizy/tensorflow:${TAG_MINOR}
+# #     - docker tag smizy/tensorflow:${TAG} smizy/tensorflow:${TAG_MAJOR}
+#     - docker push smizy/tensorflow:${TAG}
+#     - docker push smizy/tensorflow:${TAG_MINOR}
+# #     - docker push smizy/tensorflow:${TAG_MAJOR}
+#     - docker push smizy/tensorflow:latest
+#     - docker logout
+#     - curl -X POST 'https://hooks.microbadger.com/images/smizy/tensorflow/kZzvRF3AJodLAJeVZ8aVSKyupOI='
