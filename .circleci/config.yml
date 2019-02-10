@@ -49,6 +49,7 @@ jobs:
       - run:
           name: docker image build
           command: make all
+          no_output_timout: 30m
 
       - run:
           name: test
