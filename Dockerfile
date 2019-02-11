@@ -96,3 +96,7 @@ RUN set -x \
         /root/.[acpw]* \
         /tmp/tensorflow* \
         /usr/local/bin/bazel
+
+RUN set -x \
+    ## ImportError: cannot import name 'create_prompt_application'
+    && pip3 install ipython
