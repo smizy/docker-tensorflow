@@ -2,7 +2,7 @@ FROM smizy/bazel:0.15.0-alpine as bazel
 
 # ----------
 
-FROM smizy/scikit-learn:0.20.2-alpine
+FROM smizy/scikit-learn:0.20.3-alpine
 
 ARG BUILD_DATE
 ARG VCS_REF
@@ -14,7 +14,7 @@ LABEL \
     org.label-schema.docker.dockerfile="/Dockerfile" \
     org.label-schema.license="Apache License 2.0" \
     org.label-schema.name="smizy/tensorflow" \
-    org.label-schema.url="https://gitlab.com/smizy" \
+    org.label-schema.url="https://github.com/smizy" \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.vcs-type="Git" \
     org.label-schema.version=$VERSION \
